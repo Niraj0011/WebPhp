@@ -26,7 +26,7 @@ $page_title = "Home";
         <div class='card-body text-center py-5'>
             <h1 class='display-4 text-white'>Welcome to Our Website</h1>
             <p class='lead home-unlogged-text'>Please <a href='?page=register' class='text-success'>register</a> or <a href='?page=login' class='text-success'>login</a> to continue.</p>
-            <p class='text-white-50 mt-4'>Last updated: 09:20 PM +0545, June 25, 2025</p>
+            <p class='text-white-50 mt-4'>Last updated: 11:18 PM +0545, June 25, 2025</p>
         </div>
     </div>
 <?php else: ?>
@@ -50,14 +50,29 @@ $page_title = "Home";
                 $result = mysqli_query($conn, $sql);
                 if (mysqli_num_rows($result) > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<div class='col-md-4 mb-3'><div class='card glass-card-inner shadow-sm'><div class='card-body'><a href='" . htmlspecialchars($row['file_path']) . "' target='_blank' class='text-decoration-none text-white'>" . basename($row['file_path']) . "</a></div></div></div>";
+                        $filePath = htmlspecialchars($row['file_path']);
+                        $fileExt = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                        $uploadDir = "uploads/";
+                        $relativePath = $uploadDir . basename($filePath);
+                        echo "<div class='col-md-4 mb-3'><div class='card glass-card-inner shadow-sm'><div class='card-body text-center'>";
+                        if (in_array($fileExt, ['jpg', 'jpeg'])) {
+                            echo "<a href='javascript:void(0)' onclick=\"window.open('/web/$relativePath', '_blank')\"><p class='text-white'>JPEG: " . htmlspecialchars(basename($filePath)) . "</p></a>";
+                        } elseif ($fileExt == 'pdf') {
+                            echo "<a href='javascript:void(0)' onclick=\"window.open('/web/$relativePath', '_blank')\"><p class='text-white'>PDF: " . htmlspecialchars(basename($filePath)) . "</p></a>";
+                        } elseif ($fileExt == 'docx') {
+                            $googleDocsUrl = "https://docs.google.com/gview?url=" . urlencode("http://localhost/web/$relativePath") . "&embedded=false";
+                            echo "<a href='javascript:void(0)' onclick=\"window.open('$googleDocsUrl', '_blank')\"><p class='text-white'>DOCX: " . htmlspecialchars(basename($filePath)) . "</p></a>";
+                        } else {
+                            echo "<p class='text-white-50'>Unsupported file type. <a href='/web/$relativePath' target='_blank' class='text-success'>" . htmlspecialchars(basename($filePath)) . "</a></p>";
+                        }
+                        echo "</div></div></div>";
                     }
                 } else {
                     echo "<p class='text-center text-white-50'>No files uploaded yet.</p>";
                 }
                 ?>
             </div>
-            <p class='text-white-50 mt-4'>Last updated: 09:20 PM +0545, June 25, 2025</p>
+            <p class='text-white-50 mt-4'>Last updated: 11:18 PM +0545, June 25, 2025</p>
         </div>
     </div>
 <?php endif; ?>
